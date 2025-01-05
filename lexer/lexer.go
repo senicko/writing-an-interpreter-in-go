@@ -15,16 +15,12 @@ type Lexer struct {
 	ch byte
 }
 
-// New creates a new Lexer instance.
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
 }
 
-// readChar returns the next character and advances position
-// in the input. If after calling readChar() ch==0 it means
-// that we've reached EOF
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
@@ -95,9 +91,9 @@ func (l *Lexer) NextToken() token.Token {
 			// already advances the position past the read identifier.
 			return tok
 		} else if isDigit(l.ch) {
-			// TODO: Support floats and hex / octal notation
-			tok.Type = token.INT
+			tok.Type = token.INT // TODO: Support floats and hex / octal notation
 			tok.Literal = l.readNumber()
+			// Same as ^
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
