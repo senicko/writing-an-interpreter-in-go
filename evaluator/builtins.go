@@ -1,8 +1,21 @@
 package evaluator
 
-import "github.com/senicko/writing-an-interpreter-in-go/object"
+import (
+	"fmt"
+
+	"github.com/senicko/writing-an-interpreter-in-go/object"
+)
 
 var builtins = map[string]*object.Builtin{
+	"meow": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+
+			return NULL
+		},
+	},
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {

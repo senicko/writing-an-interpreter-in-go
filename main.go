@@ -31,6 +31,5 @@ func execute(source string) {
 	p := parser.New(l)
 	program := p.ParseProgram()
 	env := object.NewEnvironment()
-	result := evaluator.Eval(program, env)
-	fmt.Println(result.Inspect())
+	evaluator.Eval(program, env)
 }
