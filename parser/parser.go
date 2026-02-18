@@ -223,9 +223,10 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
+
 	leftExpression := prefix()
 
-	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
+	for !p.peekTokenIs(token.SEMICOLON) && p.peekPrecedence() > precedence {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExpression

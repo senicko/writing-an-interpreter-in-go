@@ -435,7 +435,7 @@ func TestClosures(t *testing.T) {
 func TestHashLiterals(t *testing.T) {
 	input := `
 		let two = "two";
-	
+
 		{
 			"one": 10 - 9,
 			"two": 1 + 1,
