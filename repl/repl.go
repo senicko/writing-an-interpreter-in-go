@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/senicko/writing-an-interpreter-in-go/evaluator"
+	"github.com/senicko/writing-an-interpreter-in-go/compiler"
 	"github.com/senicko/writing-an-interpreter-in-go/lexer"
-	"github.com/senicko/writing-an-interpreter-in-go/object"
 	"github.com/senicko/writing-an-interpreter-in-go/parser"
+	"github.com/senicko/writing-an-interpreter-in-go/vm"
 )
 
 const PROMPT = ">> "
@@ -16,7 +16,6 @@ const PROMPT = ">> "
 // Start starts the REPL with the given io.Reader and io.Writer.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvironment()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -35,11 +34,23 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program, env)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+		comp := compiler.New()
+		err := comp.Compile(program)
+		if err != nil {
+			fmt.Fprintf(out, "Whoops! Compilation failed:\n %s\n", err)
+			continue
 		}
+
+		machine := vm.New(comp.Bytecode())
+		err = machine.Run()
+		if err != nil {
+			fmt.Fprintf(out, "Whoops! Executing bytecode failed:\n %s\n", err)
+			continue
+		}
+
+		stackTop := machine.StackTop()
+		io.WriteString(out, stackTop.Inspect())
+		io.WriteString(out, "\n")
 	}
 }
 
