@@ -27,6 +27,8 @@ const (
 	OpPop
 	OpJumpNotTruthy
 	OpJump
+	OpSetGlobal
+	OpGetGlobal
 )
 
 type Definition struct {
@@ -51,6 +53,8 @@ var definitions = map[Opcode]*Definition{
 	OpPop:           {"OpPop", []int{}},
 	OpJumpNotTruthy: {"OpJumpNotTruthy", []int{2}},
 	OpJump:          {"OpJump", []int{2}},
+	OpSetGlobal:     {"OpGetGlobal", []int{2}},
+	OpGetGlobal:     {"OpSetGlobal", []int{2}},
 }
 
 func (ins Instructions) String() string {

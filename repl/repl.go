@@ -7,6 +7,7 @@ import (
 
 	"github.com/senicko/writing-an-interpreter-in-go/compiler"
 	"github.com/senicko/writing-an-interpreter-in-go/lexer"
+	"github.com/senicko/writing-an-interpreter-in-go/object"
 	"github.com/senicko/writing-an-interpreter-in-go/parser"
 	"github.com/senicko/writing-an-interpreter-in-go/vm"
 )
@@ -16,6 +17,10 @@ const PROMPT = ">> "
 // Start starts the REPL with the given io.Reader and io.Writer.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+
+	constants := []object.Object{}
+	globals := make([]object.Object, vm.GlobalsSize)
+	symbolTable := compiler.NewSymbolTable()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -34,14 +39,14 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		comp := compiler.New()
+		comp := compiler.NewWithState(symbolTable, constants)
 		err := comp.Compile(program)
 		if err != nil {
 			fmt.Fprintf(out, "Whoops! Compilation failed:\n %s\n", err)
 			continue
 		}
 
-		machine := vm.New(comp.Bytecode())
+		machine := vm.NewWithGlobalStore(comp.Bytecode(), globals)
 		err = machine.Run()
 		if err != nil {
 			fmt.Fprintf(out, "Whoops! Executing bytecode failed:\n %s\n", err)
